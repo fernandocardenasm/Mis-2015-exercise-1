@@ -20,15 +20,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Connect"
-        android:id="@+id/button"
-        android:layout_below="@+id/brokenTextView"
+        android:id="@+id/buttonConnect"
+        android:layout_below="@+id/radioGroup"
         android:layout_centerHorizontal="true"
-        android:onClick="fetchHTML"/>
+        android:layout_marginTop="15dp"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button">
+        android:layout_below="@+id/buttonConnect"
+        android:id="@+id/scrollView"
+        android:layout_marginTop="15dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -40,13 +42,51 @@
 
     </ScrollView>
 
+
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/radioGroup"
+        android:layout_below="@+id/brokenTextView"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:paddingTop="15dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Plain Text"
+            android:id="@+id/radioButtonPlainText"
+            android:layout_weight="2"
+            android:checked="true"
+            />
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Image"
+            android:id="@+id/radioButtonImage"
+            android:layout_weight="2"
+            />
+
+    </RadioGroup>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_below="@+id/buttonConnect"
+        android:visibility="invisible"
+        android:layout_marginTop="15dp"/>
+
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
-
+        android:layout_above="@+id/scrollView"
+        android:layout_toRightOf="@+id/brokenTextView"
+        android:layout_toEndOf="@+id/brokenTextView"/>
 
 </RelativeLayout>
