@@ -10,12 +10,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
         <activity
             android:name=".BrokenActivity"
-            android:label="@string/title_activity_broken"
-            >
-
+            android:label="@string/title_activity_broken" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,14 +23,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.usuario.mis_2015_exercise_1.AnotherBrokenActivity" />
         </activity>
-
         <activity
             android:name=".AnotherBrokenActivity"
             android:label="@string/app_name"
             android:parentActivityName=".BrokenActivity" >
-
         </activity>
-
+        <activity
+            android:name=".WebViewActivity"
+            android:label="@string/title_activity_web_view"
+            android:parentActivityName=".AnotherBrokenActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.usuario.mis_2015_exercise_1.AnotherBrokenActivity" />
+        </activity>
     </application>
 
 </manifest>

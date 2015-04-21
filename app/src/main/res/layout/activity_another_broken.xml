@@ -50,7 +50,7 @@
         android:id="@+id/radioGroup"
         android:layout_below="@+id/brokenTextView"
         android:orientation="horizontal"
-        android:weightSum="4"
+        android:weightSum="3"
         android:paddingTop="15dp">
 
         <RadioButton
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:text="Plain Text"
             android:id="@+id/radioButtonPlainText"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:checked="true"
             />
 
@@ -68,7 +68,15 @@
             android:layout_height="wrap_content"
             android:text="Image"
             android:id="@+id/radioButtonImage"
-            android:layout_weight="2"
+            android:layout_weight="1"
+            />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Web View"
+            android:id="@+id/radioButtonWebView"
+            android:layout_weight="1"
             />
 
     </RadioGroup>
