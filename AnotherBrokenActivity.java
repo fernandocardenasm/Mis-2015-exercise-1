@@ -11,8 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,15 +24,18 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 public class AnotherBrokenActivity extends Activity {
 
     private TextView mHttpText;
     private ProgressBar mProgressBar;
     private EditText mBrokenText;
+    private RadioGroup mRadioGroup;
+    private Button mButtonConnect;
+    private ImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,7 @@ public class AnotherBrokenActivity extends Activity {
 
         Intent intent = getIntent();
 
-        if (intent != null){
+        if (intent != null) {
             String message = intent.getStringExtra("EXTRA_MESSAGE");
             Toast.makeText(this, "Welcome " + message, Toast.LENGTH_SHORT).show();
         }
@@ -46,8 +52,33 @@ public class AnotherBrokenActivity extends Activity {
         mBrokenText = (EditText) findViewById(R.id.brokenTextView);
         mHttpText = (TextView) findViewById(R.id.httpText);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        mButtonConnect = (Button) findViewById(R.id.buttonConnect);
+        mImageView = (ImageView) findViewById(R.id.imageView);
+
         mProgressBar.setVisibility(View.INVISIBLE);
 
+        //enable Javascript
+
+        mButtonConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int radioId = mRadioGroup.getCheckedRadioButtonId();
+                if (radioId == R.id.radioButtonPlainText){
+                    try {
+                        fetchHTML(v);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (radioId == R.id.radioButtonImage){
+                    fetchImage();
+                }
+                else if (radioId == R.id.radioButtonWebView){
+                    fetchWebView();
+                }
+            }
+        });
     }
 
 
@@ -72,7 +103,8 @@ public class AnotherBrokenActivity extends Activity {
 
     public void fetchHTML(View view) throws IOException {
 
-
+        mHttpText.setVisibility(View.VISIBLE);
+        mImageView.setVisibility(View.INVISIBLE);
 
         if (URLUtil.isValidUrl(mBrokenText.getText().toString())) {
 
@@ -81,6 +113,9 @@ public class AnotherBrokenActivity extends Activity {
 
             if (isNetworkAvailable()) {
                 //Toast.makeText(this, "The network is available!",Toast.LENGTH_SHORT).show();
+
+                //Taken from okhttp open source library
+                //http://square.github.io/okhttp/
 
                 OkHttpClient client = new OkHttpClient();
                 Request request = new Request.Builder()
@@ -111,7 +146,7 @@ public class AnotherBrokenActivity extends Activity {
                                 @Override
                                 public void run() {
                                     mHttpText.setText(httpString);
-                                    Toast.makeText(AnotherBrokenActivity.this, "The HTTP was successful", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AnotherBrokenActivity.this, "The HTTP was successful", Toast.LENGTH_LONG).show();
                                     mProgressBar.setVisibility(View.INVISIBLE);
                                 }
                             });
@@ -130,26 +165,95 @@ public class AnotherBrokenActivity extends Activity {
                 mHttpText.setText("The response will appear here");
             }
 
+        } else {
+            Toast.makeText(AnotherBrokenActivity.this, "The URL is not valid. Please type a new one.", Toast.LENGTH_SHORT).show();
+            mHttpText.setText("The response will appear here");
+        }
+    }
+
+    public void fetchImage() {
+
+        mHttpText.setVisibility(View.INVISIBLE);
+        mImageView.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
+        if (URLUtil.isValidUrl(mBrokenText.getText().toString())) {
+            if (isNetworkAvailable()) {
+
+                //Picasso documentation
+                //http://square.github.io/picasso/
+
+                Picasso.with(AnotherBrokenActivity.this).load(mBrokenText.getText().toString()).into(mImageView
+                        ,new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AnotherBrokenActivity.this, "The HTTP was successful", Toast.LENGTH_LONG).show();
+                                mProgressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AnotherBrokenActivity.this, "The HTTP request is not an image.", Toast.LENGTH_LONG).show();
+                                mProgressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    }
+                });
+            }
+            else{
+                Toast.makeText(this, "We are sorry. The network is NOT available!", Toast.LENGTH_SHORT).show();
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
         }
         else{
             Toast.makeText(AnotherBrokenActivity.this, "The URL is not valid. Please type a new one.", Toast.LENGTH_SHORT).show();
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    private void fetchWebView(){
+        mProgressBar.setVisibility(View.VISIBLE);
+        if (URLUtil.isValidUrl(mBrokenText.getText().toString())) {
+            if(isNetworkAvailable()){
+                mProgressBar.setVisibility(View.INVISIBLE);
+                Intent intent1 = new Intent(AnotherBrokenActivity.this, WebViewActivity.class);
+                intent1.putExtra("URL",mBrokenText.getText().toString());
+                startActivity(intent1);
+            }
+            else{
+                Toast.makeText(this, "We are sorry. The network is NOT available!", Toast.LENGTH_SHORT).show();
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+        }
+        else{
+            Toast.makeText(AnotherBrokenActivity.this, "The URL is not valid. Please type a new one.", Toast.LENGTH_SHORT).show();
+            mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 
     //Determines when the network connection is available
 
+    //Mainly taken from a project of teamtreehouse.com named "Storm"
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         boolean isAvailable = false;
-        if (networkInfo != null && networkInfo.isConnected()){
+        if (networkInfo != null && networkInfo.isConnected()) {
             isAvailable = true;
         }
         return isAvailable;
     }
 
-    private boolean isURLReal(String urlString) throws MalformedURLException {
-        boolean validator = URLUtil.isValidUrl(urlString);
-        return validator;
-    }
+
+
 }
